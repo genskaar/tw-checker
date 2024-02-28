@@ -8,6 +8,9 @@ Genskaar
 Changelog
 
 Alpha
+- Added players to guild based off of guild id (fixed to mec)
+- Kelleran Beq is now meta
+- Removed statement about no preloading data => no preload
 - Added preload checker
 - Fixed listing of names for enemy misplays
 - Moved pandas to numpy for >10x speedup
@@ -25,7 +28,7 @@ import sys
 import time
 import pandas as pd
 
-VERSION = "0.0.7alpha"
+VERSION = "0.0.8alpha"
 META = [
     "CAPITALEXECUTOR",
     "CAPITALLEVIATHAN",
@@ -38,12 +41,14 @@ META = [
     "GLREY",
     "JABBATHEHUTT",
     "JEDIMASTERKENOBI",
+    "KELLERANBEQ",
     "LORDVADER",
     "MOFFGIDEONS3", # Dark Trooper Moff Gideon
     "THIRDSISTER",
 ]
 OUTFILE = datetime.datetime.now().strftime("twchecker-%d-%B-%Y.dat")
 PRELOADING = True
+OURGUILD = "7YJBGkk8ROOFw1A1kjOACQ"
 
 def remove_defensive_teams(d_f):
     """Remove def teams from logs.
@@ -61,6 +66,9 @@ def remove_defensive_teams(d_f):
             n_remove = idx
             break
         ourplayers.append(d_f[idx][2])
+    for row in d_f:
+        if row[7] == OURGUILD:
+            ourplayers.append(row[1])
     ourplayers = list(set(ourplayers))
     return d_f[n_remove:], ourplayers
 
@@ -202,7 +210,7 @@ def main():
     print(f"Version: {VERSION}")
     print(f"Date: {datetime.datetime.now().strftime('%d %B %Y')}")
     if PRELOADING:
-        print(f"Preload Checking: ENABLED - logs that do not say that 'No preloaded TM data available' or list preloaded battles are confirmed all FQ battles")
+        print(f"Preload Checking: ENABLED - Spotted preloading recorded")
 
     twlog = pd.read_excel(sys.argv[1]).to_numpy()
     twlog, ourside = remove_defensive_teams(twlog)
